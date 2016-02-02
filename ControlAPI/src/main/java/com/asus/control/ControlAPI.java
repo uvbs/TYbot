@@ -1,6 +1,7 @@
 package com.asus.control;
 
 
+import android.app.Notification;
 import android.content.ClipData;
 import android.os.Handler;
 import android.os.Message;
@@ -289,10 +290,11 @@ public class ControlAPI extends Thread {
      */
     public String controlNeckSpecificAction(int ItemNo) {
         int row, col, rowSize = 9, colSize = 100; // Size of the file
-        int WaitTime, result, Cycles = 0, bufTime = 100, count = 0;
+        int PauseTime, result, Cycles = 0, count;
         int[][] ActionArray = new int[rowSize][colSize];
         int[] targetPose = {0, 0, 0, 0};
         int oldPitchAngle = PitchAngle, oldYawAngle = YawAngle;     // For the purpose of reversing to original posture
+        int[] oldJointAngle = {YawAngle, PitchAngle};
         int[] SensorStatus = GetSensorData(0x01);
         int[] JointAngle = {YawAngle, PitchAngle};
         short pitchEncAfter = (short) (SensorStatus[e_CoreSensor.NeckPitchEnc]);
@@ -301,6 +303,7 @@ public class ControlAPI extends Thread {
         float jointPitchAfter = (float) (pitchEncAfter);
         float[] JointAfter = {(float) (SensorStatus[e_CoreSensor.NeckYawEnc]), (float) (SensorStatus[e_CoreSensor.NeckPitchEnc])};
         StringBuffer sb = new StringBuffer();
+
 
         // Load file, SpecificAction.txt, and insert into the array
         try {
@@ -312,39 +315,30 @@ public class ControlAPI extends Thread {
                 Scanner inLine = new Scanner(Line);
                 while (inLine.hasNextInt()) {
                     ActionArray[row][col] = inLine.nextInt();
-                    sb.append(ActionArray[row][col] + ", ");
+                    // sb.append(ActionArray[row][col] + ", ");
                     //Log.i(TAG, "[" + Integer.toString(row) + " , " + Integer.toString(col) + " ] = " + Integer.toString(ActionArray[row][col]));
                     col++;
                 }
                 sb.append("\n");
                 row++;
             }
-            Log.i(TAG, String.valueOf(sb));
+            // Log.i(TAG, String.valueOf(sb));
             inFile.close();
         } catch (Exception e) {
             targetPose = new int[] {0,2000,0,2000};
             result = NativePointSmooth(targetPose);
+            Log.i(TAG, "Fail to open the file, SpecificAction.txt!");
             e.printStackTrace();
-            Log.i(TAG, "Scan failed");
-//             return result;
         }
+
         int indexAngle = ActionArray[e_Specific.IncAbs][ItemNo];
-
         do {
-            Log.i(TAG, "*************** Start the Specific Action : " + Integer.toString(ItemNo) + " ****************");
+            Log.i(TAG, String.format("-------------  Start the Specific Action : %d -------------->", ItemNo));
             // Repeat the above process, if the ActionArray[e_Specific.Cycle][ItemNo] > 0
-            Log.i(TAG, "**(ActionArray[Cycle][ItemNo]+1) : " + Integer.toString((ActionArray[e_Specific.Cycle][ItemNo] + 1)) + ", " + Integer.toString(e_Specific.Cycle) + ", " + Integer.toString(ItemNo));
+            Log.i(TAG, String.format("(IncAbs: %d, Pitch: %d, Yaw: %d, Duration: %d, Pause: %d, Reverse: %d, Cycle: %d, NextDelay: %d, Next: %d)", ActionArray[0][ItemNo], ActionArray[1][ItemNo], ActionArray[2][ItemNo], ActionArray[3][ItemNo], ActionArray[4][ItemNo], ActionArray[5][ItemNo], ActionArray[6][ItemNo], ActionArray[7][ItemNo], ActionArray[8][ItemNo] ));
+            Log.i(TAG, String.format("*** (ActionArray[Cycle][ItemNo]+1) : (%d, %d, %d) ***", (ActionArray[e_Specific.Cycle][ItemNo] + 1), e_Specific.Cycle, ItemNo));
             for (int loop = 0 ; loop < (ActionArray[e_Specific.Cycle][ItemNo]+1) ; loop++) {
-//                if (ActionArray[e_Specific.IncAbs][ItemNo] == 0) {
-//                    YawAngle += ActionArray[e_Specific.YawAngle][ItemNo];
-//                    PitchAngle += ActionArray[e_Specific.PitchAngle][ItemNo];
-//                } else {
-//                    YawAngle = ActionArray[e_Specific.YawAngle][ItemNo];
-//                    PitchAngle = ActionArray[e_Specific.PitchAngle][ItemNo];
-//
-//                }
-
-//                 0: all rel, 1: Yaw->abs,Pitch->rel, 2: Yaw->rel,Pitch->abs, 3: all abs
+                // 0: all rel, 1: Yaw->abs,Pitch->rel, 2: Yaw->rel,Pitch->abs, 3: all abs
                 if ((indexAngle & 0x00000001) == 1) {
                     YawAngle = ActionArray[e_Specific.YawAngle][ItemNo];
                 } else {
@@ -355,67 +349,66 @@ public class ControlAPI extends Thread {
                 } else {
                     PitchAngle += ActionArray[e_Specific.PitchAngle][ItemNo];
                 }
+
                 // Send out the command in unit [0.1deg, 0.1deg, msec, msec]
-                targetPose = new int[]{YawAngle * 10, ActionArray[e_Specific.Duration][ItemNo], PitchAngle * 10, ActionArray[e_Specific.Duration][ItemNo]};  // Convert to 0.1 deg and msec
-                result = NativePointSmooth(targetPose);
                 JointAngle = new int[]{YawAngle, PitchAngle};
-                pitchEncAfter = (short) (SensorStatus[e_CoreSensor.NeckPitchEnc]);
-                yawEncAfter = (short) (SensorStatus[e_CoreSensor.NeckYawEnc]);
-                jointYawAfter = (float) (yawEncAfter) / 4096 * 360;      // Convert encoder count to degree
-                jointPitchAfter = (float) (pitchEncAfter) / 4096 * 360;
+                targetPose = new int[]{YawAngle * 10, ActionArray[e_Specific.Duration][ItemNo], PitchAngle * 10, ActionArray[e_Specific.Duration][ItemNo]};  // Convert to 0.1 deg and msec
+                Log.i(TAG, String.format("1st Run(Yaw = %d, Pitch = %d, Time = %d)", targetPose[0], targetPose[2], ActionArray[e_Specific.Duration][ItemNo]));
+                result = NativePointSmooth(targetPose);
+                count = 0;
                 do {
-                    Log.i(TAG, "Check Status in first move");
-                    pitchEncAfter = (short) (SensorStatus[e_CoreSensor.NeckPitchEnc]);
-                    yawEncAfter = (short) (SensorStatus[e_CoreSensor.NeckYawEnc]);
-                    jointYawAfter = (float) (yawEncAfter) / 4096 * 360;      // Convert encoder count to degree
-                    jointPitchAfter = (float) (pitchEncAfter) / 4096 * 360;
-                    JointAfter = new float[]{jointYawAfter, jointPitchAfter};
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                     count++;
+                    Log.i(TAG, String.format("Duration = %d, count = %d", (ActionArray[e_Specific.Duration][ItemNo] / 100), count));
+                } while ( count < (ActionArray[e_Specific.Duration][ItemNo] / 100) );    // In the future, check the status of ( Neck_status = posCtrlBusy[Neck_Yaw] &  posCtrlBusy[Neck_Pitch]<<1 )
+                Log.i(TAG, String.format("Finish 1st Run~"));
+
+
+                // Wait for a while based on "PauseTime".
+                PauseTime = ActionArray[e_Specific.PauseTime][ItemNo];
+                if ( PauseTime > 5000 ) {   // Assume the pause time is less than 5000 msec.
+                    PauseTime = 5000;
+                } else if ( PauseTime <= 0 ) {
+                    PauseTime = 0;
                 }
-                while (((Math.abs(JointAngle[0] - JointAfter[0]) >= 1) || (Math.abs(JointAngle[1] - JointAfter[1]) >= 1)) && (count < 1.1 * ActionArray[e_Specific.Duration][ItemNo] / 100));
-                count = 0;
+                Log.i(TAG, String.format("PauseTime = %d", PauseTime));
+                try {
+                    Log.i(TAG, String.format("Wait for Duration = %d  ; PauseTime = %d", ActionArray[e_Specific.Duration][ItemNo], PauseTime));
+                    Thread.sleep(PauseTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+
                 // Reverse to the original posture
                 if (ActionArray[e_Specific.ReverseTime][ItemNo] > 0) {
-
-                    PitchAngle = oldPitchAngle;
-                    YawAngle = oldYawAngle;
+                    JointAngle = oldJointAngle;
                     // Send out the command in unit [0.1deg, 0.1deg, msec, msec]
-                    targetPose = new int[]{YawAngle * 10, ActionArray[e_Specific.ReverseTime][ItemNo], PitchAngle * 10, ActionArray[e_Specific.ReverseTime][ItemNo]};  // Convert to 0.1 deg and msec
+                    targetPose = new int[]{JointAngle[0] * 10, ActionArray[e_Specific.ReverseTime][ItemNo], JointAngle[1] * 10, ActionArray[e_Specific.ReverseTime][ItemNo]};  // Convert to 0.1 deg and msec
+                    Log.i(TAG, String.format("Reverse(Yaw = %d, Pitch = %d, Time = %d)", targetPose[0], targetPose[2], ActionArray[e_Specific.ReverseTime][ItemNo]));
                     result = NativePointSmooth(targetPose);
-
+                    count = 0;
                     // Wait for a while based on "ReverseTime".  Note that "bufTime" msec is appended for guaranteeing the motion is finished,
                     do {
-                        Log.i(TAG, "Check Status in Reverse");
-                        pitchEncAfter = (short) (SensorStatus[e_CoreSensor.NeckPitchEnc]);
-                        yawEncAfter = (short) (SensorStatus[e_CoreSensor.NeckYawEnc]);
-                        jointYawAfter = (float) (yawEncAfter) / 4096 * 360;      // Convert encoder count to degree
-                        jointPitchAfter = (float) (pitchEncAfter) / 4096 * 360;
-                        JointAfter = new float[]{jointYawAfter, jointPitchAfter};
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                         count++;
-                    }
-                    while (((Math.abs(JointAngle[0] - JointAfter[0]) >= 1) || (Math.abs(JointAngle[1] - JointAfter[1]) >= 1)) && (count < 1.1 * ActionArray[e_Specific.Duration][ItemNo] / 100));
-                    count = 0;
-                    Log.i(TAG, "ReverseTime = " + Integer.toString(ActionArray[e_Specific.ReverseTime][ItemNo]));
-                    Log.i(TAG, "Reverse to the original posture: [ " + Integer.toString(targetPose[0]) + " , " + Integer.toString(targetPose[1]) + " , " + Integer.toString(targetPose[2]) + " ]");
+                    } while ( (count < ActionArray[e_Specific.ReverseTime][ItemNo] / 100) );
                 }
             }
+
+
             //Next-step motion, if necessary
-
             if (ActionArray[e_Specific.NextMotionDelay][ItemNo] >= 0) {
-
                 try {
-                    WaitTime = ActionArray[e_Specific.NextMotionDelay][ItemNo] + bufTime;
-                    Thread.sleep(WaitTime);
+                    Thread.sleep(ActionArray[e_Specific.NextMotionDelay][ItemNo]);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -423,183 +416,16 @@ public class ControlAPI extends Thread {
                 ItemNo = ActionArray[e_Specific.NextMotion][ItemNo];
                 Cycles++;
             } else {
-                ctrlNeckJoint(YawAngle,1000,PitchAngle,1000);
+                // Why need to return to the original angle?
+                // ctrlNeckJoint(YawAngle, 1000, PitchAngle, 1000);
                 Cycles = 0;
             }
-            Log.i(TAG, "e_NextMotionDelay" + Integer.toString(ActionArray[e_Specific.NextMotionDelay][ItemNo]) + " ; e_NextMotion = " + Integer.toString(ActionArray[e_Specific.NextMotion][ItemNo]));
-            Log.i(TAG, "Cycle = " + Integer.toString(Cycles) + " ; ItemNo = " + Integer.toString(ItemNo));
+            Log.i(TAG, String.format("e_NextMotionDelay = %d ; e_NextMotion = %d ; Cycle = %d ; ItemNo = %d", ActionArray[e_Specific.NextMotionDelay][ItemNo], ActionArray[e_Specific.NextMotion][ItemNo], Cycles, ItemNo));
         } while (Cycles > 0 && Cycles < 30);    // Limit the cycles less than 4
 
         result = 1;
-        Log.i(TAG, "API -> Finish Specific Action No. " + Integer.toString(ItemNo));
+        Log.i(TAG, String.format("-------------  Finish the Specific Action : %d -------------->", ItemNo));
         return ("Control Neck SpecificAction : " + Integer.toString(result));
-
-
-//            if (ActionArray[e_Specific.ReverseTime][ItemNo] > 0) {
-//                if(ActionArray[e_Specific.NextMotionDelay][ItemNo] >= 0){
-//                    targetPose = new int[]{YawAngle * 10, PitchAngle * 10, ActionArray[e_Specific.ReverseTime][ItemNo], ActionArray[e_Specific.ReverseTime][ItemNo]};  // Convert to 0.1 deg and msec
-//                    result = NativeControlNeckJoint(targetPose);
-//                }else {
-//                    targetPose = new int[]{YawAngle * 10, PitchAngle * 10, ActionArray[e_Specific.ReverseTime][ItemNo], ActionArray[e_Specific.ReverseTime][ItemNo]};  // Convert to 0.1 deg and msec
-//                    result = NativeControlNeckJoint(targetPose);
-//                }
-//                PitchAngle = oldPitchAngle;
-//                YawAngle = oldYawAngle;
-//                // Send out the command in unit [0.1deg, 0.1deg, msec, msec]
-//                targetPose = new int[]{YawAngle * 10, PitchAngle * 10, ActionArray[e_Specific.ReverseTime][ItemNo], ActionArray[e_Specific.ReverseTime][ItemNo]};  // Convert to 0.1 deg and msec
-//                result = NativeControlNeckJoint(targetPose);
-//
-//                // Wait for a while based on "ReverseTime".  Note that "bufTime" msec is appended for guaranteeing the motion is finished,
-//                do {
-//                    try {
-//                        Thread.sleep(100);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                    count++;
-//                } while ((count < 10) && (SensorStatus[e_CoreSensor.NeckStatus] & 0x03) > 0);
-//                try {
-//                    WaitTime = ActionArray[e_Specific.PauseTime][ItemNo] + bufTime;
-//                    Thread.sleep(WaitTime);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                Log.i(TAG, "ReverseTime = " + Integer.toString(ActionArray[e_Specific.ReverseTime][ItemNo]));
-//                Log.i(TAG, "Reverse to the original posture: [ " + Integer.toString(targetPose[0]) + " , " + Integer.toString(targetPose[1]) + " , " + Integer.toString(targetPose[2]) + " ]");
-//            }else{
-//                targetPose = new int[]{YawAngle * 10, PitchAngle * 10, ActionArray[e_Specific.ReverseTime][ItemNo], ActionArray[e_Specific.ReverseTime][ItemNo]};  // Convert to 0.1 deg and msec
-//                result = NativeControlNeckJoint(targetPose);
-//            }
-//
-//            if (ActionArray[e_Specific.NextMotionDelay][ItemNo] >= 0) {
-//
-//                int [] JointAngle = {YawAngle, PitchAngle};
-//                // Send out the command in unit [0.1deg, 0.1deg, msec, msec]
-//                targetPose = new int[]{ YawAngle * 10,  (ActionArray[e_Specific.Duration][ItemNo]), PitchAngle, (ActionArray[e_Specific.Duration][ItemNo])};  // Convert to 0.1 deg and msec
-//                result = NativePointSmooth(targetPose);
-//                try {
-//                    Thread.sleep(ActionArray[e_Specific.Duration][ItemNo]);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                short pitchEncAfter = (short) (SensorStatus[e_CoreSensor.NeckPitchEnc]);
-//                short yawEncAfter = (short) (SensorStatus[e_CoreSensor.NeckYawEnc]);
-//                float jointYawAfter = (float) (yawEncAfter) / 4096 * 360;      // Convert encoder count to degree
-//                float jointPitchAfter = (float) (pitchEncAfter) / 4096 * 360;
-//                float[] JointAfter = {jointYawAfter, jointPitchAfter};
-//                do{
-//                    if (Math.abs(JointAngle[0] - JointAfter[0]) <= 2 || Math.abs(JointAngle[1] - JointAfter[1]) <= 2) {
-//                        ItemNo = ActionArray[e_Specific.NextMotion][ItemNo];
-//                        Cycles++;
-//                    } else {
-//                         Log.i(TAG, "Check Status");
-//                         pitchEncAfter = (short) (SensorStatus[e_CoreSensor.NeckPitchEnc]);
-//                         yawEncAfter = (short) (SensorStatus[e_CoreSensor.NeckYawEnc]);
-//                         jointYawAfter = (float) (yawEncAfter) / 4096 * 360;      // Convert encoder count to degree
-//                         jointPitchAfter = (float) (pitchEncAfter) / 4096 * 360;
-//                         JointAfter = new float[] {jointYawAfter, jointPitchAfter};
-//                        try {
-//                            Thread.sleep(ActionArray[e_Specific.Duration][ItemNo]);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }while(Math.abs(JointAngle[0] - JointAfter[0]) <= 2);
-//
-//                Log.i(TAG,"NextMotion");
-//                try {
-//                    WaitTime = ActionArray[e_Specific.NextMotionDelay][ItemNo] + bufTime;
-//                    Thread.sleep(WaitTime);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }else{
-//                targetPose = new int[]{YawAngle * 10, PitchAngle * 10, ActionArray[e_Specific.Duration][ItemNo], ActionArray[e_Specific.Duration][ItemNo]};  // Convert to 0.1 deg and msec
-//                result = NativeControlNeckJoint(targetPose);
-//                Cycles = 0;
-//            }
-//            Log.i(TAG, "indexAngle = : " + Integer.toString(indexAngle) + "," + Integer.toString(indexAngle >> 1) + "," + Integer.toString(indexAngle & 1) + "," + Integer.toString(ItemNo));
-//            Log.i(TAG, "Abs. Angle [yaw, pitch, time] = : [ " + Integer.toString(targetPose[0]) + " , " + Integer.toString(targetPose[1]) + " , " + Integer.toString(targetPose[2]) + " ]");
-
-
-            // Wait for a while based on "Duration" and "PauseTime".  Note that "bufTime" msec is appended for guaranteeing the motion is finished
-//            do {
-//                try {
-//                    Thread.sleep(100);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                count++;
-//            } while ((count < 10) && (SensorStatus[e_CoreSensor.NeckStatus] & 0x03) > 0);
-//            try {
-//                WaitTime = ActionArray[e_Specific.PauseTime][ItemNo] + bufTime;
-//                Thread.sleep(WaitTime);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-
-//            Log.i(TAG, "Wait for Duration : " + Integer.toString(ActionArray[e_Specific.Duration][ItemNo]) + " ; PauseTime : " + Integer.toString(ActionArray[e_Specific.PauseTime][ItemNo]));
-//
-//
-//            // Reverse to the original posture
-//            if (ActionArray[e_Specific.ReverseTime][ItemNo] > 0) {
-//
-//                PitchAngle = oldPitchAngle;
-//                YawAngle = oldYawAngle;
-//                // Send out the command in unit [0.1deg, 0.1deg, msec, msec]
-//                targetPose = new int[]{YawAngle * 10, PitchAngle * 10, ActionArray[e_Specific.ReverseTime][ItemNo], ActionArray[e_Specific.ReverseTime][ItemNo]};  // Convert to 0.1 deg and msec
-//                result = NativeControlNeckJoint(targetPose);
-//
-//                // Wait for a while based on "ReverseTime".  Note that "bufTime" msec is appended for guaranteeing the motion is finished,
-//                do {
-//                    try {
-//                        Thread.sleep(100);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                    count++;
-//                } while ((count < 10) && (SensorStatus[e_CoreSensor.NeckStatus] & 0x03) > 0);
-//                try {
-//                    WaitTime = ActionArray[e_Specific.PauseTime][ItemNo] + bufTime;
-//                    Thread.sleep(WaitTime);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                Log.i(TAG, "ReverseTime = " + Integer.toString(ActionArray[e_Specific.ReverseTime][ItemNo]));
-//                Log.i(TAG, "Reverse to the original posture: [ " + Integer.toString(targetPose[0]) + " , " + Integer.toString(targetPose[1]) + " , " + Integer.toString(targetPose[2]) + " ]");
-//            }
-
-//
-//            Log.i(TAG, "ActionArray" + Integer.toString(ActionArray[0][ItemNo]) + ", " + Integer.toString(ActionArray[1][ItemNo]) + ", " + Integer.toString(ActionArray[2][ItemNo]) + ", " + Integer.toString(ActionArray[3][ItemNo]) + ", " + Integer.toString(ActionArray[4][ItemNo]) + ", " + Integer.toString(ActionArray[5][ItemNo]) + ", " + Integer.toString(ActionArray[6][ItemNo]) + ", " + Integer.toString(ActionArray[7][ItemNo]) + ", " + Integer.toString(ActionArray[8][ItemNo]) );
-//            Log.i(TAG, "NextMotion and Duration: " + Integer.toString(ActionArray[e_Specific.NextMotion][ItemNo]) + ", " + Integer.toString(ActionArray[e_Specific.Duration][ItemNo]) );
-//            Log.i(TAG, "e_NextMotionDelay" + Integer.toString(e_Specific.NextMotionDelay) + " ; ItemNo = " + Integer.toString(ItemNo));
-//            Log.i(TAG, "ActionArray[e_NextMotionDelay][ItemNo]" + Integer.toString(ActionArray[e_Specific.NextMotionDelay][ItemNo]));
-//            Log.i(TAG, "Cycles = " + Integer.toString(Cycles));
-//             //Next-step motion, if necessary
-//
-//            if (ActionArray[e_Specific.NextMotionDelay][ItemNo] >= 0) {
-//
-//                try {
-//                    WaitTime = ActionArray[e_Specific.NextMotionDelay][ItemNo] + bufTime;
-//                    Thread.sleep(WaitTime);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                // Next-step motion //e_NextMotion
-//                ItemNo = ActionArray[e_Specific.NextMotion][ItemNo];
-//                Cycles++;
-//            } else {
-//                Cycles = 0;
-//            }
-//            Log.i(TAG, "e_NextMotionDelay" + Integer.toString(ActionArray[e_Specific.NextMotionDelay][ItemNo]) + " ; e_NextMotion = " + Integer.toString(ActionArray[e_Specific.NextMotion][ItemNo]));
-//            Log.i(TAG, "Cycle = " + Integer.toString(Cycles) + " ; ItemNo = " + Integer.toString(ItemNo));
-//        } while (Cycles>0 && Cycles<30) ;    // Limit the cycles less than 4
-//
-//        result = 1;
-//        Log.i(TAG, "API -> Finish Specific Action No. " + Integer.toString(ItemNo));
-//        return ("Control Neck SpecificAction : " + Integer.toString( result ) );
     }
 
     /**
