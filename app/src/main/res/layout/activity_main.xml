@@ -1,0 +1,734 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="1"
+        android:id="@+id/linearLayout"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="77dp"
+        android:layout_marginEnd="77dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            android:orientation="horizontal"
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:text="@string/hello_world"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/TextViewDebug"
+                        android:layout_column="1" />
+
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:layout_width="110dip"
+                        android:layout_height="40dip"
+                        android:text="Initial"
+                        android:id="@+id/btnInitialDevice"
+                        android:enabled="true"
+                        android:layout_column="1" />
+
+                    <Button
+                        android:layout_width="110dip"
+                        android:layout_height="40dip"
+                        android:text="Forward"
+                        android:id="@+id/btnForward"
+                        android:layout_column="2" />
+                    <Button
+                        android:layout_width="110dip"
+                        android:layout_height="40dip"
+                        android:text="Stop"
+                        android:id="@+id/btnStop"
+                        android:layout_column="3" />
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/arrow_left"
+                        android:id="@+id/btnArrowLeft"
+                        android:padding="5dp"
+                        android:layout_column="4" />
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/arrow_up"
+                        android:id="@+id/btnArrowUp"
+                        android:padding="5dp"
+                        android:layout_column="5" />
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/arrow_right"
+                        android:id="@+id/btnArrowRight"
+                        android:padding="5dp"
+                        android:layout_column="6" />
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/arrow_down"
+                        android:id="@+id/btnArrowDown"
+                        android:padding="5dp"
+                        android:layout_column="7" />
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/chevron_double_down"
+                        android:id="@+id/btnChevronDoubleDown"
+                        android:padding="5dp"
+                        android:layout_column="8" />
+
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:layout_width="110dip"
+                        android:layout_height="40dip"
+                        android:text="Left"
+                        android:id="@+id/btnLeft"
+                        android:layout_column="1" />
+
+                    <Button
+                        android:layout_width="110dip"
+                        android:layout_height="40dip"
+                        android:text="Back"
+                        android:id="@+id/btnBack"
+                        android:layout_column="2" />
+
+                    <Button
+                        android:layout_width="110dip"
+                        android:layout_height="40dip"
+                        android:text="Right"
+                        android:id="@+id/btnRight"
+                        android:layout_column="3" />
+                </TableRow>
+
+            </TableLayout>
+
+        </LinearLayout>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CmdID:" />
+
+            <EditText
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_CmdID"
+                android:inputType="number"
+                android:text="2"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:textAlignment="center" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/txtCommandID"
+                android:text="CmdData: " />
+
+            <EditText
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_CmdData0"
+                android:inputType="number"
+                android:text="25"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:textAlignment="center"
+                android:autoText="false" />
+
+            <EditText
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_CmdData1"
+                android:inputType="number"
+                android:text="0"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:textAlignment="center" />
+
+            <EditText
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_CmdData2"
+                android:inputType="number"
+                android:text="25"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:textAlignment="center" />
+
+
+            <EditText
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_CmdData3"
+                android:inputType="number"
+                android:text="0"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:textAlignment="center" />
+
+            <EditText
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_CmdData4"
+                android:inputType="number"
+                android:text="0"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:textAlignment="center" />
+
+            <EditText
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_CmdData5"
+                android:inputType="number"
+                android:text="0"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:textAlignment="center" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="40dip"
+                android:text="Send"
+                android:id="@+id/CB_Send"
+                android:layout_gravity="center_horizontal" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/edtYawAngle"
+                android:inputType="numberDecimal|numberSigned"
+                android:text="0"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:layout_below="@+id/btnCalculate"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textAlignment="center"
+                android:layout_weight="1" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/edtYawTime"
+                android:inputType="numberDecimal"
+                android:text="1"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:layout_below="@+id/btnCalculate"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textAlignment="center"
+                android:layout_weight="1" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/edtPitchAngle"
+                android:inputType="numberDecimal|numberSigned"
+                android:text="0"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:layout_below="@+id/btnCalculate"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textAlignment="center"
+                android:layout_weight="1" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/edtPitchTime"
+                android:inputType="numberDecimal"
+                android:text="1"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:layout_below="@+id/btnCalculate"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textAlignment="center"
+                android:layout_weight="1" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Neck(yaw,t,Pitch,t)"
+                android:id="@+id/btnNeck"
+                android:layout_weight="1" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/edtSpecificItemNo"
+                android:inputType="number"
+                android:text="0"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:layout_below="@+id/btnCalculate"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textAlignment="center"
+                android:layout_weight="1" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Specific Action(no.)"
+                android:id="@+id/btnSpecificAction"
+                android:layout_weight="1" />
+        </TableRow>
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_relX"
+                android:inputType="numberDecimal|numberSigned"
+                android:text="0.1"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:layout_below="@+id/btnCalculate"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textAlignment="center"
+                android:layout_weight="0.30" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_relY"
+                android:inputType="numberDecimal|numberSigned"
+                android:text="-0.1"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:layout_below="@+id/btnCalculate"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textAlignment="center"
+                android:layout_weight="0.30" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_relTheta"
+                android:inputType="numberDecimal|numberSigned"
+                android:text="-10"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:layout_below="@+id/btnCalculate"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textAlignment="center"
+                android:layout_weight="0.30" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MoveTo (x,y,theta)"
+                android:id="@+id/btnRelMoveTo"
+                android:layout_weight="0.30" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_rho"
+                android:inputType="numberDecimal|numberSigned"
+                android:text="0.00"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:layout_below="@+id/btnCalculate"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textAlignment="center"
+                android:layout_weight="0.30" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_alpha"
+                android:inputType="numberDecimal|numberSigned"
+                android:text="45.00"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:layout_below="@+id/btnCalculate"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textAlignment="center"
+                android:layout_weight="0.30" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_beta"
+                android:inputType="numberDecimal|numberSigned"
+                android:text="10.00"
+                android:singleLine="true"
+                android:numeric="integer"
+                android:layout_below="@+id/btnCalculate"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textAlignment="center"
+                android:layout_weight="0.30" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MoveTo (rho, alpha, beta)"
+                android:id="@+id/btnRelMoveToCylindrical"
+                android:layout_weight="0.30" />
+        </TableRow>
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/txtShortestRoute"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true">
+            <EditText
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_xA"
+                android:inputType="numberDecimal|numberSigned"
+                android:text="0.5"
+                android:singleLine="true"
+                android:layout_below="@+id/btnCalculate"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:textAlignment="center"/>
+
+            <EditText
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_yA"
+                android:inputType="numberDecimal|numberSigned"
+                android:text="0.5"
+                android:singleLine="true"
+                android:layout_alignTop="@+id/edt_xA"
+                android:layout_toRightOf="@+id/edt_xA"
+                android:layout_toEndOf="@+id/edt_xA"
+                android:textAlignment="center" />
+
+            <EditText
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_thetaA"
+                android:inputType="number"
+                android:text="0"
+                android:singleLine="true"
+                android:numeric="signed|integer"
+                android:layout_alignTop="@+id/edt_yA"
+                android:layout_toRightOf="@+id/edt_yA"
+                android:layout_toEndOf="@+id/edt_yA"
+                android:textAlignment="center" />
+
+            <EditText
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_xB"
+                android:inputType="numberDecimal|numberSigned"
+                android:text="4.5"
+                android:singleLine="true"
+                android:layout_alignTop="@+id/edt_thetaA"
+                android:layout_alignRight="@+id/btnLeft"
+                android:layout_alignEnd="@+id/btnLeft"
+                android:textAlignment="center" />
+
+            <EditText
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_yB"
+                android:inputType="numberDecimal|numberSigned"
+                android:text="4.5"
+                android:singleLine="true"
+                android:layout_alignTop="@+id/edt_xB"
+                android:layout_toRightOf="@+id/edt_xB"
+                android:layout_toEndOf="@+id/edt_xB"
+                android:textAlignment="center" />
+
+            <EditText
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/edt_thetaB"
+                android:inputType="number"
+                android:text="0"
+                android:singleLine="true"
+                android:numeric="signed|integer"
+                android:layout_alignTop="@+id/edt_yB"
+                android:layout_toRightOf="@+id/edt_yB"
+                android:layout_toEndOf="@+id/edt_yB"
+                android:textAlignment="center" />
+
+            // Find the shortest route from (xA, yA, thetaA) to (xB, yB, thetaB)
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Path"
+                android:id="@+id/btnCalculate"
+                android:layout_below="@+id/btnInitialDevice"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                style="@style/AppTheme"
+                android:nestedScrollingEnabled="true" />
+        </TableRow>
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <SeekBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:max="19"
+                    android:progress="0"
+                    android:secondaryProgress="0"
+                    android:id="@+id/barLeftSonar"
+                    android:progressDrawable="@xml/progress_drawable"
+                    android:thumb="@xml/thumb_drawable"
+                    android:minWidth="300dp"
+                    android:indeterminate="false" />
+
+                <EditText
+                    android:paddingTop="10dip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="#022cff"
+                    android:text="70 cm"
+                    android:textSize="16sp"
+                    android:id="@+id/txtLeftSonar"
+                    android:layout_gravity="center_horizontal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <SeekBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:max="19"
+                    android:progress="0"
+                    android:secondaryProgress="0"
+                    android:id="@+id/barRightSonar"
+                    android:progressDrawable="@xml/progress_drawable"
+                    android:thumb="@xml/thumb_drawable"
+                    android:minWidth="300dp" />
+
+                <EditText
+                    android:paddingTop="10dip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="#022cff"
+                    android:text="70 cm"
+                    android:textSize="16sp"
+                    android:id="@+id/txtRightSonar"
+                    android:layout_gravity="center_horizontal" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <SeekBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:max="19"
+                    android:progress="0"
+                    android:secondaryProgress="0"
+                    android:id="@+id/barRearSonar"
+                    android:progressDrawable="@xml/progress_drawable"
+                    android:thumb="@xml/thumb_drawable"
+                    android:minWidth="300dp" />
+
+                <EditText
+                    android:paddingTop="10dip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="#022cff"
+                    android:text="70 cm"
+                    android:textSize="16sp"
+                    android:id="@+id/txtRearSonar"
+                    android:layout_gravity="center_horizontal" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="UserTck"
+                android:id="@+id/btnTrack" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="UserFollow"
+                android:id="@+id/btnFollow" />
+
+            <Spinner
+                android:layout_width="144dp"
+                android:layout_height="match_parent"
+                android:id="@+id/spinnerAngle"
+                android:entries="@array/Choice"
+                android:spinnerMode="dialog"
+                android:prompt="@string/spn_Choice_prompt" />
+
+
+            <!--<EditText-->
+                <!--android:layout_width="136dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:id="@+id/edtTrackYaw"-->
+                <!--android:text="1" />-->
+
+            <!--<EditText-->
+                <!--android:layout_width="136dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:id="@+id/edtTrackPitch"-->
+                <!--android:text="1" />-->
+            <!--<TextView-->
+                <!--android:layout_width="70dp"-->
+                <!--android:layout_height="31dp"-->
+                <!--android:text="TrackYaw"-->
+                <!--android:id="@+id/textView"-->
+                <!--android:layout_gravity="center_horizontal" />-->
+
+            <!--<SeekBar-->
+                <!--android:layout_width="362dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:max="19"-->
+                <!--android:progress="0"-->
+                <!--android:secondaryProgress="0"-->
+                <!--android:id="@+id/barUserTrackYaw"-->
+                <!--android:progressDrawable="@xml/progress_drawable"-->
+                <!--android:thumb="@xml/thumb_drawable"-->
+                <!--android:minWidth="300dp"-->
+                <!--android:layout_gravity="center_horizontal" />-->
+
+            <!--<EditText-->
+                <!--android:layout_width="175dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:id="@+id/txtUserTrackYaw"-->
+                <!--android:gravity="center"-->
+                <!--android:textColor="#022cff"-->
+                <!--android:text="0 cm"-->
+                <!--android:textSize="16sp"-->
+                <!--android:layout_gravity="center_horizontal" />-->
+
+        </LinearLayout>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/bike_black_36dp"
+                android:id="@+id/btnBike"
+                android:padding="5dp" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        </TableRow>
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="299dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Read Sensor Status"
+            android:id="@+id/TextViewSensorData" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Read Sensor RAW"
+            android:id="@+id/TextViewSensorRAW" />
+
+
+    </LinearLayout>
+
+</RelativeLayout>

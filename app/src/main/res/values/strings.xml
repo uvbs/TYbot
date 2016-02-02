@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Asusbot</string>
+
+    <string name="hello_world">Command type</string>
+    <string name="action_settings">Settings</string>
+    <string name="ShortestRoute">Calculate ...</string>
+    <string name="CommandID">Command ID...</string>
+    <string-array name="Choice">
+        <item>Abs</item>
+        <item>Rel</item>
+    </string-array>
+    <string name="spn_Choice_prompt">Choose type</string>
+
+</resources>
